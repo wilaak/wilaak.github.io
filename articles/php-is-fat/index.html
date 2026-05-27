@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHP is fat</title>
+    <link rel="stylesheet" href="/simple.css">
+</head>
+
+<body>
+    <h1>PHP is fat and really, really stupid</h1>
+    <img src="Parental_Advisory_label.svg" alt="Parental Advisory"
+        style="width: 160px; display: block; margin: 1rem 0;">
+    <p>
+        PHP is one of the most verbose mainstream language for expressing typed, structured code.
+        Yet it earned no such reputation because the community has convinced itself the verbosity is a virtue!
+    </p>
+    <p>
+        Explicit is better than implicit.
+        That principle applies when implicit behaviour is surprising.
+        It does not apply when the implicit behaviour is the only possible behaviour, enforced by the spec.
+    </p>
+
+    <p>This is just noise with a philosophical label stuck on after the fact.</p>
+
+    <h2>Explicit Content!</h2>
+
+    <p>
+        Take the PHP documentation's own example for constructor promotion.
+        Here it is in modern idiomatic PHP: <code>final readonly</code>, promoted properties, two methods,
+        each body a single expression:
+    </p>
+
+    <pre><span class="k">final</span> <span class="k">readonly</span> <span class="k">class</span> <span class="t">Point</span>
+<span class="p">{</span>
+    <span class="k">public function</span> <span class="f">__construct</span><span class="p">(</span>
+        <span class="k">public</span> <span class="t">float</span> <span class="v">$x</span><span class="p">,</span>
+        <span class="k">public</span> <span class="t">float</span> <span class="v">$y</span><span class="p">,</span>
+    <span class="p">) {}</span>
+
+    <span class="k">public function</span> <span class="f">translate</span><span class="p">(</span><span class="t">float</span> <span class="v">$dx</span><span class="p">,</span> <span class="t">float</span> <span class="v">$dy</span><span class="p">):</span> <span class="t">self</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="t">self</span><span class="p">(</span><span class="v">$this</span><span class="p">-&gt;</span><span class="v">x</span> + <span class="v">$dx</span><span class="p">,</span> <span class="v">$this</span><span class="p">-&gt;</span><span class="v">y</span> + <span class="v">$dy</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">public function</span> <span class="f">distanceTo</span><span class="p">(</span><span class="t">Point</span> <span class="v">$other</span><span class="p">):</span> <span class="t">float</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="f">sqrt</span><span class="p">((</span><span class="v">$other</span><span class="p">-&gt;</span><span class="v">x</span> - <span class="v">$this</span><span class="p">-&gt;</span><span class="v">x</span><span class="p">) **</span> 2 + <span class="p">(</span><span class="v">$other</span><span class="p">-&gt;</span><span class="v">y</span> - <span class="v">$this</span><span class="p">-&gt;</span><span class="v">y</span><span class="p">) **</span> 2<span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></pre>
+
+    <p>
+        Wow! Look at the width of those methods! And this is not even a worst-case example with extra
+        modifiers or dare I say when generics finally arrive... NEVER!
+    </p>
+    <p class="note">
+        Side note: a <code>Point</code> should not be a class at all. Classes carry object identity baggage and live
+        on the heap, huge overhead!! A coordinate pair is a value with no identity, and creating
+        one should cost nothing, but PHP has no structured value types, so here we are.
+    </p>
+
+    <h2>Should we use Go instead?</h2>
+
+    <p>
+        Wait don't Go! You should only Go... here :-) . It's not Go-Over yet. PHP is not a legacy language!!
+    </p>
+
+    <p>
+        This is easily fixed in PHP-src! (Oh yes I'm sure everyone will agree and not be mad!) Just yeet
+        the redundant
+        keywords. The same rules still apply, but now the code is much easier to read.
+    </p>
+
+    <pre><span class="k">final</span> <span class="k">readonly</span> <span class="k">class</span> <span class="t">Point</span>
+<span class="p">{</span>
+    <span class="f">__construct</span><span class="p">(</span>
+        <span class="k">public</span> <span class="t">float</span> <span class="v">$x</span><span class="p">,</span>
+        <span class="k">public</span> <span class="t">float</span> <span class="v">$y</span><span class="p">,</span>
+    <span class="p">) {}</span>
+
+    <span class="f">translate</span><span class="p">(</span><span class="t">float</span> <span class="v">$dx</span><span class="p">,</span> <span class="t">float</span> <span class="v">$dy</span><span class="p">):</span> <span class="t">self</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="t">self</span><span class="p">(</span><span class="v">$this</span><span class="p">-&gt;</span><span class="v">x</span> + <span class="v">$dx</span><span class="p">,</span> <span class="v">$this</span><span class="p">-&gt;</span><span class="v">y</span> + <span class="v">$dy</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="f">distanceTo</span><span class="p">(</span><span class="t">Point</span> <span class="v">$other</span><span class="p">):</span> <span class="t">float</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="f">sqrt</span><span class="p">((</span><span class="v">$other</span><span class="p">-&gt;</span><span class="v">x</span> - <span class="v">$this</span><span class="p">-&gt;</span><span class="v">x</span><span class="p">) **</span> 2 + <span class="p">(</span><span class="v">$other</span><span class="p">-&gt;</span><span class="v">y</span> - <span class="v">$this</span><span class="p">-&gt;</span><span class="v">y</span><span class="p">) **</span> 2<span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></pre>
+
+    <p>
+        Inside a class every method is implicitly public and <code>function</code> is identifiable from context. Neither
+        keyword adds information.
+    </p>
+
+    <p>
+        Properties could Go further with a rule borrowed from many other langs: a bare
+        typed property is private by default. <code>public</code> is only written when you mean to expose
+        something, which is when it actually carries information:
+    </p>
+
+<pre><span class="k">final</span> <span class="k">readonly</span> <span class="k">class</span> <span class="t">Range</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="t">float</span> <span class="v">$min</span><span class="p">,</span> <span class="v">$max</span><span class="p">;</span>
+
+    <span class="f">contains</span><span class="p">(</span><span class="t">float</span> <span class="v">$value</span><span class="p">):</span> <span class="t">bool</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="v">$value</span> &gt;= <span class="v">$this</span><span class="p">-&gt;</span><span class="v">min</span> &amp;&amp; <span class="v">$value</span> &lt;= <span class="v">$this</span><span class="p">-&gt;</span><span class="v">max</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="f">clamp</span><span class="p">(</span><span class="t">float</span> <span class="v">$value</span><span class="p">):</span> <span class="t">float</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="f">max</span><span class="p">(</span><span class="v">$this</span><span class="p">-&gt;</span><span class="v">min</span><span class="p">,</span> <span class="f">min</span><span class="p">(</span><span class="v">$this</span><span class="p">-&gt;</span><span class="v">max</span><span class="p">,</span> <span class="v">$value</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span></pre>
+
+    <p>
+        A class with mixed visibility needs no special syntax. Bare properties are private, <code>public</code>
+        marks the API surface:
+    </p>
+
+<pre><span class="k">class</span> <span class="t">Connection</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="t">string</span> <span class="v">$host</span><span class="p">;</span>
+    <span class="k">public</span> <span class="t">int</span> <span class="v">$port</span><span class="p">;</span>
+
+    <span class="t">string</span> <span class="v">$username</span><span class="p">;</span>
+    <span class="t">string</span> <span class="v">$password</span><span class="p">;</span>
+<span class="p">}</span></pre>
+
+    <p>
+        The comma syntax could also <a href="https://cdn.facesofopensource.com/wp-content/uploads/2022/05/10133823/KenThompson20516-1.web_-scaled.jpg">Go</a> further. Once a type is established on a line, subsequent names
+        in the list could drop the sigil and type, and mixing types in a single declaration should
+        also be possible. Blocks give you a way to group a visibility without repeating it:
+    </p>
+
+<pre><span class="k">class</span> <span class="t">Example</span>
+<span class="p">{</span>
+    <span class="cm">// same type, shorthand names after the first</span>
+    <span class="k">public</span> <span class="t">float</span> <span class="v">$x</span><span class="p">,</span> <span class="v">y</span><span class="p">,</span> <span class="v">z</span><span class="p">;</span>
+
+    <span class="cm">// mixed types in one line</span>
+    <span class="k">public</span> <span class="t">float</span> <span class="v">$width</span><span class="p">,</span> <span class="t">int</span> <span class="v">$count</span><span class="p">,</span> <span class="t">string</span> <span class="v">$label</span><span class="p">;</span>
+
+    <span class="cm">// visibility block, public stated once, covers everything inside</span>
+    <span class="k">public</span> <span class="p">{</span>
+        <span class="t">float</span> <span class="v">$min</span><span class="p">,</span> <span class="v">max</span><span class="p">;</span>
+        <span class="t">string</span> <span class="v">$name</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="cm">// bare properties are private, no keyword needed</span>
+    <span class="t">string</span> <span class="v">$secret</span><span class="p">;</span>
+    <span class="t">DateTime</span> <span class="v">$createdAt</span><span class="p">;</span>
+<span class="p">}</span></pre>
+
+    <h2>It is only getting worse!!1</h2>
+
+    <p>
+        PHP 8.4 added property hooks, they are pretty cool. But the verbosity compounds!!!
+        The <code>public</code> modifier now sits at the front of a block that already has a default value, a get body, and a set body. It is the least
+        interesting word on the page:
+    </p>
+
+    <pre><span class="k">class</span> <span class="t">Example</span>
+<span class="p">{</span>
+    <span class="t">bool</span> <span class="v">$modified</span> = <span class="k">false</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="t">string</span> <span class="v">$foo</span> = <span class="s">'default'</span>
+    <span class="p">{</span>
+        <span class="k">get</span> <span class="p">=&gt;</span> <span class="v">$this</span><span class="p">-&gt;</span><span class="v">modified</span> <span class="p">?</span> <span class="v">$this</span><span class="p">-&gt;</span><span class="v">foo</span> . <span class="s">' (modified)'</span> <span class="p">:</span> <span class="v">$this</span><span class="p">-&gt;</span><span class="v">foo</span><span class="p">;</span>
+        <span class="k">set</span> <span class="p">=&gt;</span> <span class="v">$this</span><span class="p">-&gt;</span><span class="f">applyFoo</span><span class="p">(</span><span class="v">$value</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">private function</span> <span class="f">applyFoo</span><span class="p">(</span><span class="t">string</span> <span class="v">$value</span><span class="p">):</span> <span class="t">void</span>
+    <span class="p">{</span>
+        <span class="v">$this</span><span class="p">-&gt;</span><span class="v">foo</span> = <span class="f">strtolower</span><span class="p">(</span><span class="v">$value</span><span class="p">);</span>
+        <span class="v">$this</span><span class="p">-&gt;</span><span class="v">modified</span> = <span class="k">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span></pre>
+
+    <p>
+        Oh and now properties can be put on interfaces, cool! Makes sense given it's just a syntactic sugar for a getter and an optional setter:
+    </p>
+
+    <pre><span class="k">interface</span> <span class="t">HasId</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="t">int</span> <span class="v">$id</span> <span class="p">{</span> <span class="k">get</span><span class="p">; }</span>
+    <span class="k">public</span> <span class="t">string</span> <span class="v">$name</span> <span class="p">{</span> <span class="k">get</span><span class="p">; }</span>
+<span class="p">}</span></pre>
+
+    <p>
+        But wait, you have to write public?? There is no world in which those properties are not public, it's an interface for God's sake! The modifier communicates nothing.
+    </p>
+</body>
+
+</html>
