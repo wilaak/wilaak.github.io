@@ -62,9 +62,32 @@
     </p>
 
     <p>
-        This is easily fixed. Simply remove the redundant keywords.
-        The same rules still apply, but now the code is more visually appealing, and the important information stands
-        out more.
+        Let's start off easy: drop the <code>function</code> keyword. Most modern languages like Java, C#, Kotlin,
+        and Swift don't require it inside a class body. The parser already knows it's a method from context, and so should you:
+    </p>
+
+    <pre><span class="k">final</span> <span class="k">readonly</span> <span class="k">class</span> <span class="t">Point</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="f">__construct</span><span class="p">(</span>
+        <span class="k">public</span> <span class="t">float</span> <span class="v">$x</span><span class="p">,</span>
+        <span class="k">public</span> <span class="t">float</span> <span class="v">$y</span><span class="p">,</span>
+    <span class="p">) {}</span>
+
+    <span class="k">public</span> <span class="f">translate</span><span class="p">(</span><span class="t">float</span> <span class="v">$dx</span><span class="p">,</span> <span class="t">float</span> <span class="v">$dy</span><span class="p">):</span> <span class="t">self</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="t">self</span><span class="p">(</span><span class="v">$this</span><span class="p">-&gt;</span><span class="v">x</span> + <span class="v">$dx</span><span class="p">,</span> <span class="v">$this</span><span class="p">-&gt;</span><span class="v">y</span> + <span class="v">$dy</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="f">distanceTo</span><span class="p">(</span><span class="t">Point</span> <span class="v">$other</span><span class="p">):</span> <span class="t">float</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="f">sqrt</span><span class="p">((</span><span class="v">$other</span><span class="p">-&gt;</span><span class="v">x</span> - <span class="v">$this</span><span class="p">-&gt;</span><span class="v">x</span><span class="p">) **</span> 2 + <span class="p">(</span><span class="v">$other</span><span class="p">-&gt;</span><span class="v">y</span> - <span class="v">$this</span><span class="p">-&gt;</span><span class="v">y</span><span class="p">) **</span> 2<span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></pre>
+
+    <p>
+        Then lean on the implicit default. Methods without a visibility modifier are already public in PHP, so
+        spelling it out adds nothing the spec doesn't already guarantee. The same rules still apply, but the
+        important information stands out more:
     </p>
 
     <pre><span class="k">final</span> <span class="k">readonly</span> <span class="k">class</span> <span class="t">Point</span>
