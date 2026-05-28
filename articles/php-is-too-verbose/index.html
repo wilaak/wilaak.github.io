@@ -12,7 +12,8 @@
     <h1>PHP is too verbose</h1>
 
     <p>
-        One thing that's always struck me is how much unnecessary ceremony PHP devs add to their code, and how it's actually even recommended for the sake of being "Explicit".
+        One thing that's always struck me is how much unnecessary ceremony PHP devs add to their code, and how it's
+        actually even recommended for the sake of being "Explicit".
     </p>
 
     <p>
@@ -21,6 +22,8 @@
         It does not apply when the implicit behaviour is the only possible behaviour, enforced by the spec.
         Doing so is just noise with a philosophical label stuck on after the fact.
     </p>
+
+    <h2>Methods</h2>
 
     <p>
         Take the PHP documentation's own example for constructor promotion.
@@ -48,7 +51,8 @@
 
     <p>
         You see the redundant use of <code>public function</code> everywhere?
-        PHP already has implicit public visibility for methods, and the <code>function</code> keyword is identifiable from context.
+        PHP already has implicit public visibility for methods, and the <code>function</code> keyword is identifiable
+        from context.
         Neither adds useful information.
     </p>
 
@@ -81,10 +85,12 @@
     <span class="p">}</span>
 <span class="p">}</span></pre>
 
+    <h2>Properties</h2>
+
     <p>
         Properties could really do with some love too. Today every property must be prefixed with a visibility modifier.
-        Bare typed properties should default to public by default, it makes more sense, encapsulation is just annoying
-        and it would be consistent with method behavior.
+        Typed properties without a visility modifier should default to public by default.
+
     </p>
 
     <p>
@@ -129,8 +135,11 @@
     <span class="p">}</span>
 <span class="p">}</span></pre>
 
+    <h2>Property hooks</h2>
+
     <p>
-        To finish off with another minor inconvenience, property hooks on interfaces require you to declare them as public.
+        Another minor inconvenience, property hooks on interfaces require you to declare them as
+        public.
         In no world can an interface be anything other than public, so this is just redundant noise.
     </p>
 
@@ -139,6 +148,106 @@
     <span class="k">public</span> <span class="t">int</span> <span class="v">$id</span> <span class="p">{</span> <span class="k">get</span><span class="p">; }</span>
     <span class="k">public</span> <span class="t">string</span> <span class="v">$name</span> <span class="p">{</span> <span class="k">get</span><span class="p">; }</span>
 <span class="p">}</span></pre>
+
+    <h2>Generics</h2>
+
+    <p>
+        There is an <a href="https://wiki.php.net/rfc/bound_erased_generic_types">RFC for generics</a> in the works.
+        Generic type parameters already make signatures longer. Stacking <code>public function</code> on top of that makes it worse.
+    </p>
+
+    <p>
+        Here is what idiomatic generic PHP would likely look like under the current rules:
+    </p>
+
+    <pre><span class="k">final readonly class</span> <span class="t">Pair</span><span class="p">&lt;+</span><span class="t">L</span><span class="p">, +</span><span class="t">R</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="k">public function</span> <span class="f">__construct</span><span class="p">(</span>
+        <span class="k">public</span> <span class="t">L</span> <span class="v">$left</span><span class="p">,</span>
+        <span class="k">public</span> <span class="t">R</span> <span class="v">$right</span><span class="p">,</span>
+    <span class="p">) {}</span>
+
+    <span class="k">public function</span> <span class="f">swap</span><span class="p">():</span> <span class="t">Pair</span><span class="p">&lt;</span><span class="t">R</span><span class="p">,</span> <span class="t">L</span><span class="p">&gt;</span>
+    <span class="p">{</span>
+        <span class="k">return new</span> <span class="t">Pair</span><span class="p">(</span><span class="v">$this</span><span class="p">-&gt;</span><span class="v">right</span><span class="p">,</span> <span class="v">$this</span><span class="p">-&gt;</span><span class="v">left</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">final readonly class</span> <span class="t">Box</span><span class="p">&lt;+</span><span class="t">T</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="k">public function</span> <span class="f">__construct</span><span class="p">(</span>
+        <span class="k">public</span> <span class="t">T</span> <span class="v">$value</span><span class="p">,</span>
+    <span class="p">) {}</span>
+
+    <span class="k">public function</span> <span class="f">map</span><span class="p">&lt;</span><span class="t">U</span><span class="p">&gt;(</span><span class="t">callable</span> <span class="v">$fn</span><span class="p">):</span> <span class="t">Box</span><span class="p">&lt;</span><span class="t">U</span><span class="p">&gt;</span>
+    <span class="p">{</span>
+        <span class="k">return new</span> <span class="t">Box</span><span class="p">((</span><span class="v">$fn</span><span class="p">)(</span><span class="v">$this</span><span class="p">-&gt;</span><span class="v">value</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="k">public function</span> <span class="f">zip</span><span class="p">&lt;</span><span class="t">O</span><span class="p">&gt;(</span><span class="t">O</span> <span class="v">$value</span><span class="p">):</span> <span class="t">Box</span><span class="p">&lt;</span><span class="t">Pair</span><span class="p">&lt;</span><span class="t">T</span><span class="p">,</span> <span class="t">O</span><span class="p">&gt;&gt;</span>
+    <span class="p">{</span>
+        <span class="k">return new</span> <span class="t">Box</span><span class="p">(</span><span class="k">new</span> <span class="t">Pair</span><span class="p">(</span><span class="v">$this</span><span class="p">-&gt;</span><span class="v">value</span><span class="p">,</span> <span class="v">$value</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span></pre>
+
+    <p>
+        The type parameters are already doing a lot of visual work. With the redundant keywords removed, the
+        structure breathes again and the types stand out:
+    </p>
+
+    <pre><span class="k">final readonly class</span> <span class="t">Pair</span><span class="p">&lt;+</span><span class="t">L</span><span class="p">, +</span><span class="t">R</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="f">__construct</span><span class="p">(</span>
+        <span class="k">public</span> <span class="t">L</span> <span class="v">$left</span><span class="p">,</span>
+        <span class="k">public</span> <span class="t">R</span> <span class="v">$right</span><span class="p">,</span>
+    <span class="p">) {}</span>
+
+    <span class="f">swap</span><span class="p">():</span> <span class="t">Pair</span><span class="p">&lt;</span><span class="t">R</span><span class="p">,</span> <span class="t">L</span><span class="p">&gt;</span>
+    <span class="p">{</span>
+        <span class="k">return new</span> <span class="t">Pair</span><span class="p">(</span><span class="v">$this</span><span class="p">-&gt;</span><span class="v">right</span><span class="p">,</span> <span class="v">$this</span><span class="p">-&gt;</span><span class="v">left</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">final readonly class</span> <span class="t">Box</span><span class="p">&lt;+</span><span class="t">T</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="f">__construct</span><span class="p">(</span>
+        <span class="k">public</span> <span class="t">T</span> <span class="v">$value</span><span class="p">,</span>
+    <span class="p">) {}</span>
+
+    <span class="f">map</span><span class="p">&lt;</span><span class="t">U</span><span class="p">&gt;(</span><span class="t">callable</span> <span class="v">$fn</span><span class="p">):</span> <span class="t">Box</span><span class="p">&lt;</span><span class="t">U</span><span class="p">&gt;</span>
+    <span class="p">{</span>
+        <span class="k">return new</span> <span class="t">Box</span><span class="p">((</span><span class="v">$fn</span><span class="p">)(</span><span class="v">$this</span><span class="p">-&gt;</span><span class="v">value</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="f">zip</span><span class="p">&lt;</span><span class="t">O</span><span class="p">&gt;(</span><span class="t">O</span> <span class="v">$value</span><span class="p">):</span> <span class="t">Box</span><span class="p">&lt;</span><span class="t">Pair</span><span class="p">&lt;</span><span class="t">T</span><span class="p">,</span> <span class="t">O</span><span class="p">&gt;&gt;</span>
+    <span class="p">{</span>
+        <span class="k">return new</span> <span class="t">Box</span><span class="p">(</span><span class="k">new</span> <span class="t">Pair</span><span class="p">(</span><span class="v">$this</span><span class="p">-&gt;</span><span class="v">value</span><span class="p">,</span> <span class="v">$value</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span></pre>
+
+    <h2>This is all achievable today</h2>
+
+    <p>
+        None of this requires a new language paradigm or a radical redesign. The generics examples aside, every
+        change described in this article is a small, localised modification to PHP-src.
+    </p>
+
+    <p>
+        Dropping <code>public function</code> is a parser change. Methods already default to public. The
+        <code>function</code> keyword is only required today because the grammar demands it. Removing that requirement
+        is a single grammar production change.
+    </p>
+
+    <p>
+        Defaulting unqualified properties to public is the same story. The parser currently rejects a property
+        declaration without a visibility modifier. Flipping that to an implicit default is a one-line change in the
+        property parsing logic.
+    </p>
+    
+    <p>
+        These are not proposals that require years of RFC debate about semantics. The semantics are unchanged.
+        The only thing being removed is the requirement to write things the compiler already knows.
+    </p>
 
 </body>
 
