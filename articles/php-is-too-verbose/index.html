@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHP is too verbose</title>
+    <link rel="stylesheet" href="/simple.css">
+</head>
+
+<body>
+    <h1>PHP is too verbose</h1>
+
+    <p>
+        One thing that's always struck me is how much unnecessary ceremony PHP devs add to their code, and how it's actually even recommended for the sake of being "Explicit".
+    </p>
+
+    <p>
+        Explicit is better than implicit.
+        That principle applies when implicit behaviour is surprising.
+        It does not apply when the implicit behaviour is the only possible behaviour, enforced by the spec.
+        Doing so is just noise with a philosophical label stuck on after the fact.
+    </p>
+
+    <p>
+        Take the PHP documentation's own example for constructor promotion.
+        Here it is in modern idiomatic PHP: <code>final readonly</code>, promoted properties, two methods,
+        each body a single expression:
+    </p>
+
+    <pre><span class="k">final</span> <span class="k">readonly</span> <span class="k">class</span> <span class="t">Point</span>
+<span class="p">{</span>
+    <span class="k">public function</span> <span class="f">__construct</span><span class="p">(</span>
+        <span class="k">public</span> <span class="t">float</span> <span class="v">$x</span><span class="p">,</span>
+        <span class="k">public</span> <span class="t">float</span> <span class="v">$y</span><span class="p">,</span>
+    <span class="p">) {}</span>
+
+    <span class="k">public function</span> <span class="f">translate</span><span class="p">(</span><span class="t">float</span> <span class="v">$dx</span><span class="p">,</span> <span class="t">float</span> <span class="v">$dy</span><span class="p">):</span> <span class="t">self</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="t">self</span><span class="p">(</span><span class="v">$this</span><span class="p">-&gt;</span><span class="v">x</span> + <span class="v">$dx</span><span class="p">,</span> <span class="v">$this</span><span class="p">-&gt;</span><span class="v">y</span> + <span class="v">$dy</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">public function</span> <span class="f">distanceTo</span><span class="p">(</span><span class="t">Point</span> <span class="v">$other</span><span class="p">):</span> <span class="t">float</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="f">sqrt</span><span class="p">((</span><span class="v">$other</span><span class="p">-&gt;</span><span class="v">x</span> - <span class="v">$this</span><span class="p">-&gt;</span><span class="v">x</span><span class="p">) **</span> 2 + <span class="p">(</span><span class="v">$other</span><span class="p">-&gt;</span><span class="v">y</span> - <span class="v">$this</span><span class="p">-&gt;</span><span class="v">y</span><span class="p">) **</span> 2<span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></pre>
+
+    <p>
+        You see the redundant use of <code>public function</code> everywhere?
+        PHP already has implicit public visibility for methods, and the <code>function</code> keyword is identifiable from context.
+        Neither adds useful information.
+    </p>
+
+    <p>
+        This is not even a worst-case example with many arguments, extra modifiers or dare I say when generics finally
+        arrive, it's not gonna be pretty.
+    </p>
+
+    <p>
+        This is easily fixed. Simply remove the redundant keywords.
+        The same rules still apply, but now the code is more visually appealing, and the important information stands
+        out more.
+    </p>
+
+    <pre><span class="k">final</span> <span class="k">readonly</span> <span class="k">class</span> <span class="t">Point</span>
+<span class="p">{</span>
+    <span class="f">__construct</span><span class="p">(</span>
+        <span class="k">public</span> <span class="t">float</span> <span class="v">$x</span><span class="p">,</span>
+        <span class="k">public</span> <span class="t">float</span> <span class="v">$y</span><span class="p">,</span>
+    <span class="p">) {}</span>
+
+    <span class="f">translate</span><span class="p">(</span><span class="t">float</span> <span class="v">$dx</span><span class="p">,</span> <span class="t">float</span> <span class="v">$dy</span><span class="p">):</span> <span class="t">self</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="t">self</span><span class="p">(</span><span class="v">$this</span><span class="p">-&gt;</span><span class="v">x</span> + <span class="v">$dx</span><span class="p">,</span> <span class="v">$this</span><span class="p">-&gt;</span><span class="v">y</span> + <span class="v">$dy</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="f">distanceTo</span><span class="p">(</span><span class="t">Point</span> <span class="v">$other</span><span class="p">):</span> <span class="t">float</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="f">sqrt</span><span class="p">((</span><span class="v">$other</span><span class="p">-&gt;</span><span class="v">x</span> - <span class="v">$this</span><span class="p">-&gt;</span><span class="v">x</span><span class="p">) **</span> 2 + <span class="p">(</span><span class="v">$other</span><span class="p">-&gt;</span><span class="v">y</span> - <span class="v">$this</span><span class="p">-&gt;</span><span class="v">y</span><span class="p">) **</span> 2<span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></pre>
+
+    <p>
+        Properties could really do with some love too. Today every property must be prefixed with a visibility modifier.
+        Bare typed properties should default to public by default, it makes more sense, encapsulation is just annoying
+        and it would be consistent with method behavior.
+    </p>
+
+    <p>
+        Defaulting to private only pays off for black-box APIs with strict versioning, where hiding internals is a
+        genuine contract.
+        For everyday code it just creates friction. You know a field has useful state, you can't touch it, and the
+        restriction buys you nothing. Especially when debugging or writing tests.
+    </p>
+
+    <p>
+        The underscore convention is a neat trade-off. Prefix fields you consider private with it and the
+        intent is communicated clearly, without the language enforcing access rules that get in your way.
+    </p>
+
+    <p>
+        Properties should also be allowed to be declared in a comma-separated list, just like variables. This is a
+        common pattern in other languages, and it reduces boilerplate when you have multiple fields of the same type.
+    </p>
+
+    <pre><span class="k">class</span> <span class="t">Example</span>
+<span class="p">{</span>
+    <span class="cm">// same type, shorthand names after the first</span>
+    <span class="t">float</span> <span class="v">$x</span><span class="p">,</span> <span class="v">y</span><span class="p">,</span> <span class="v">z</span><span class="p">;</span>
+
+    <span class="cm">// mixed types in one line</span>
+    <span class="t">float</span> <span class="v">$width</span><span class="p">,</span> <span class="t">int</span> <span class="v">$count</span><span class="p">,</span> <span class="t">string</span> <span class="v">$label</span><span class="p">;</span>
+
+    <span class="t">string</span> <span class="v">$name</span><span class="p">;</span>
+    <span class="t">DateTime</span> <span class="v">$createdAt</span><span class="p">;</span>
+
+    <span class="cm">// underscore prefix signals internal use, still accessible</span>
+    <span class="t">string</span> <span class="v">$_cache</span><span class="p">;</span>
+    <span class="t">int</span> <span class="v">$_retryCount</span><span class="p">;</span>
+
+    <span class="cm">// private stated once for multiple properties</span>
+    <span class="k">private</span> <span class="t">string</span> <span class="v">$secret</span><span class="p">,</span> <span class="t">string</span> <span class="v">$token</span><span class="p">;</span>
+
+    <span class="cm">// or as a block when there are many</span>
+    <span class="k">private</span> <span class="p">{</span>
+        <span class="t">string</span> <span class="v">$secret</span><span class="p">,</span>
+        <span class="t">string</span> <span class="v">$token</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span></pre>
+
+    <p>
+        To finish off with another minor inconvenience, property hooks on interfaces require you to declare them as public.
+        In no world can an interface be anything other than public, so this is just redundant noise.
+    </p>
+
+    <pre><span class="k">interface</span> <span class="t">HasId</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="t">int</span> <span class="v">$id</span> <span class="p">{</span> <span class="k">get</span><span class="p">; }</span>
+    <span class="k">public</span> <span class="t">string</span> <span class="v">$name</span> <span class="p">{</span> <span class="k">get</span><span class="p">; }</span>
+<span class="p">}</span></pre>
+
+</body>
+
+</html>
