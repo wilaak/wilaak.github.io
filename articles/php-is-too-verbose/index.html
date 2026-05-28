@@ -233,18 +233,6 @@
     </p>
 
     <p>
-        Dropping <code>public function</code> is a parser change. Methods already default to public. The
-        <code>function</code> keyword is only required today because the grammar demands it. Removing that requirement
-        is a single grammar production change.
-    </p>
-
-    <p>
-        Defaulting unqualified properties to public is the same story. The parser currently rejects a property
-        declaration without a visibility modifier. Flipping that to an implicit default is a one-line change in the
-        property parsing logic.
-    </p>
-
-    <p>
         These are not proposals that require years of RFC debate about semantics. The semantics are unchanged.
         The only thing being removed is the requirement to write things the compiler already knows.
     </p>
