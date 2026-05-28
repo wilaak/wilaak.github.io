@@ -88,9 +88,9 @@
     <h2>Properties</h2>
 
     <p>
-        Properties could really do with some love too. Today every property must be prefixed with a visibility modifier.
-        Typed properties without a visility modifier should default to public by default.
-
+        Properties could do with some love too. Today every property must be prefixed with a visibility modifier.
+        Typed properties without a visibility modifier should default to public by default, this is consistent with method behavior
+        and encapsulation can honestly be quite annoying sometimes.
     </p>
 
     <p>
@@ -243,7 +243,7 @@
         declaration without a visibility modifier. Flipping that to an implicit default is a one-line change in the
         property parsing logic.
     </p>
-    
+
     <p>
         These are not proposals that require years of RFC debate about semantics. The semantics are unchanged.
         The only thing being removed is the requirement to write things the compiler already knows.
